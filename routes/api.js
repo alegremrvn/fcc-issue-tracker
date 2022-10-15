@@ -35,7 +35,11 @@ module.exports = function (app) {
         }
       }
 
-      run().catch(console.dir)
+      if (req.body.issue_title && req.body.issue_text && req.body.created_by) {
+        run().catch(console.dir)
+      } else {
+        res.json({error: 'Fill all required fields.'})
+      }
     })
     
     .put(function (req, res){
