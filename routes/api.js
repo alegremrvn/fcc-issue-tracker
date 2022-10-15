@@ -1,4 +1,9 @@
 'use strict';
+require('dotenv').config()
+const MongoClient = require('mongodb').MongoClient
+
+const URI = process.env.MONGO_URI
+const client = new MongoClient(URI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 module.exports = function (app) {
 
@@ -12,6 +17,25 @@ module.exports = function (app) {
     .post(function (req, res){
       let project = req.params.project;
       
+      async function run() {
+        try {
+          await client.connect()
+          const projectIssues = client.db('issue_tracker').collection(project)
+          const doc = {
+            issue_title: req.body.issue_title,
+            issue_text: req.body.issue_text,
+            created_by: req.body.created_by,
+            assigned_to: req.body.assigned_to,
+            status_text: req.body.status_text
+          }
+          const result = await projectIssues.insertOne(doc)
+          res.json(result)
+        } finally {
+          await client.close()
+        }
+      }
+
+      run().catch(console.dir)
     })
     
     .put(function (req, res){
