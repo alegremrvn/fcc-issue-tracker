@@ -57,4 +57,23 @@ suite('Functional Tests', function() {
         })
     })
   })
+
+  suite('GET /api/issues/:project', function() {
+    test('#4 view issues on a project', function(done) {
+      chai
+        .request(server)
+        .get('/api/issues/ourlibraries')
+        .end(function(err, res) {
+          assert.isArray(res.body)
+
+          if (res.body.length > 0) {
+            assert.isOk(res.body[0].issue_title)
+            assert.isOk(res.body[0].issue_text)
+            assert.isOk(res.body[0].created_by)
+          }
+
+          done()
+        })
+    })
+  })
 });
