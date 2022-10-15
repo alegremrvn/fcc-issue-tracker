@@ -17,7 +17,13 @@ module.exports = function (app) {
           await client.connect()
           const projectIssues = client.db('issue_tracker').collection(project)
 
-          const issues = projectIssues.find()
+          let issues
+          let queryKeys = Object.keys(req.query)
+          if (queryKeys.length === 0) {
+            issues = projectIssues.find()
+          } else {
+            issues = projectIssues.find(req.query)
+          }
 
           let result = []
           await issues.forEach((issue) => {
