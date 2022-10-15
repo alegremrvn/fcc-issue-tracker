@@ -87,5 +87,18 @@ suite('Functional Tests', function() {
           done()
         })
     })
+
+    test('#6 view issues on a project with multiple filters', function(done) {
+      chai
+        .request(server)
+        .get('/api/issues/ourlibraries?created_by=mj&open=false')
+        .end(function(err, res) {
+          for (let i = 0; i < res.body.length; i++) {
+            assert.equal(res.body[i].created_by, 'mj')
+            assert.equal(res.body[i].open, false)
+          }
+          done()
+        })
+    })
   })
 });
