@@ -43,8 +43,11 @@ module.exports = function (app) {
           const doc = {
             issue_title: req.body.issue_title,
             issue_text: req.body.issue_text,
+            create_on: new Date(),
+            updated_on: new Date(),
             created_by: req.body.created_by,
             assigned_to: req.body.assigned_to,
+            open: true,
             status_text: req.body.status_text
           }
           const result = await projectIssues.insertOne(doc)
