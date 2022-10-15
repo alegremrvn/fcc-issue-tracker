@@ -49,7 +49,7 @@ suite('Functional Tests', function() {
         .post('/api/issues/ourlibraries')
         .type('form')
         .send({
-          create_by: 'mj'
+          created_by: 'mj'
         })
         .end(function(err, res) {
           assert.isOk(res.body.error)
