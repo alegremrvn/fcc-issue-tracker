@@ -12,6 +12,25 @@ module.exports = function (app) {
     .get(function (req, res){
       let project = req.params.project;
       
+      async function run() {
+        try {
+          await client.connect()
+          const projectIssues = client.db('issue_tracker').collection(project)
+
+          const issues = projectIssues.find()
+
+          let result = []
+          await issues.forEach((issue) => {
+            result.push(issue)
+          })
+
+          res.json(result)
+        } finally {
+          await client.close()
+        }
+      }
+      
+      run().catch(console.dir)
     })
     
     .post(function (req, res){
