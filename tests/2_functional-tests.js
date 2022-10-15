@@ -6,7 +6,7 @@ const server = require('../server');
 chai.use(chaiHttp);
 
 suite('Functional Tests', function() {
-  this.timeout(2000)
+  this.timeout(3000)
   suite('POST /api/issues/:project', function() {
     // #1
     test('#1 create an issue with every field', function(done) {
@@ -35,7 +35,7 @@ suite('Functional Tests', function() {
         .send({
           issue_title: 'search button not working',
           issue_text: 'button is not responding to clicks',
-          created_by: 'mj'
+          created_by: 'jm'
         })
         .end(function(err, res) {
           assert.isOk(res.body.insertedId)
@@ -72,6 +72,18 @@ suite('Functional Tests', function() {
             assert.isOk(res.body[0].created_by)
           }
 
+          done()
+        })
+    })
+
+    test('#5 view issues on a project with one filter', function(done) {
+      chai
+        .request(server)
+        .get('/api/issues/ourlibraries?created_by=mj')
+        .end(function(err, res) {
+          for (let i = 0; i < res.body.length; i++) {
+            assert.equal(res.body[i].created_by, 'mj')
+          }
           done()
         })
     })
