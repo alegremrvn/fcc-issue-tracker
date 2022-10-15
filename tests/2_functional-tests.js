@@ -9,7 +9,7 @@ suite('Functional Tests', function() {
   this.timeout(1000)
   suite('POST /api/issues/:project', function() {
     // #1
-    test('create an issue with every field', function() {
+    test('#1 create an issue with every field', function() {
       chai
         .request(server)
         .post('/api/issues/ourlibraries')
