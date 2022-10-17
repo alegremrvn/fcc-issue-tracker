@@ -97,7 +97,28 @@ module.exports = function (app) {
         }
       }
 
-      run().catch(console.dir)
+      let keys = Object.keys(req.body)
+      if (!keys.includes('_id')) {
+        res.json({
+          error: 'Provide an _id.'
+        })
+      } else {
+        if (keys.length === 1) {
+          res.json({
+            error: 'Provide at least one field to update.'
+          })
+        } else {
+          try {
+            run().catch(console.dir)
+          } catch(e) {
+            console.log(e)
+            res.json({
+              error: 'Invalid ObjectId.'
+            })
+          }
+        }
+      }
+
     })
     
     .delete(function (req, res){
