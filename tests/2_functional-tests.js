@@ -12,7 +12,7 @@ let URI = process.env.MONGO_URI
 const client = new MongoClient(URI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 suite('Functional Tests', function() {
-  this.timeout(15000)
+  this.timeout(5000)
   this.beforeAll(function() {
     async function run() {
       try {
@@ -213,6 +213,48 @@ suite('Functional Tests', function() {
         .send({
           _id: '34d039e1d1d84258c91913b'
         })
+        .end(function(err, res) {
+          assert.isOk(res.body.error)
+          done()
+        })
+    })
+  })
+
+  suite('DELETE /api/issues/:project', function() {
+    test('#12 delete an issue', function(done) {
+      chai
+        .request(server)
+        .delete('/api/issues/ourlibraries')
+        .type('form')
+        .send({
+          _id: '634b7306d1852520da835db1'
+        })
+        .end(function(err, res) {
+          assert.equal(res.body.deletedCount, 1)
+          done()
+        })
+    })
+
+    test('#13 delete an issue with an invalid _id', function(done) {
+      chai
+        .request(server)
+        .delete('/api/issues/ourlibraries')
+        .type('form')
+        .send({
+          _id: '34d039e1d1d84258c91913b'
+        })
+        .end(function(err, res) {
+          assert.isOk(res.body.error)
+          done()
+        })
+    })
+
+    test('#14 delete an issue with a missing _id', function(done) {
+      chai
+        .request(server)
+        .delete('/api/issues/ourlibraries')
+        .type('form')
+        .send({})
         .end(function(err, res) {
           assert.isOk(res.body.error)
           done()
