@@ -244,7 +244,7 @@ suite('Functional Tests', function() {
           _id: '34d039e1d1d84258c91913b'
         })
         .end(function(err, res) {
-          assert.isOk(res.body.error)
+          assert.equal(res.body.error, 'Invalid ObjectId.')
           done()
         })
     })
@@ -256,7 +256,7 @@ suite('Functional Tests', function() {
         .type('form')
         .send({})
         .end(function(err, res) {
-          assert.isOk(res.body.error)
+          assert.equal(res.body.error, 'Provide an _id.')
           done()
         })
     })
