@@ -22,17 +22,23 @@ suite('Functional Tests', function() {
           {
             _id: new ObjectId('634b7306d1852520da835db1'),
             created_by: 'asdf',
-            open: true
+            open: true,
+            issue_title: 'asdf',
+            issue_text: 'asdf'
           }, 
           {
             _id: new ObjectId('634b7306d1852520da835db2'),
             created_by: 'asdf',
-            open: true
+            open: true,
+            issue_title: 'asdf',
+            issue_text: 'asdf'
           },
           {
             _id: new ObjectId('634b7306d1852520da835db3'),
             created_by: 'asdf',
-            open: true
+            open: true,
+            issue_title: 'asdf',
+            issue_text: 'asdf'
           }
         ]
         await projectIssues.insertMany(docs)
