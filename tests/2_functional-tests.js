@@ -170,5 +170,47 @@ suite('Functional Tests', function() {
           done()
         })
     })
+
+    test('#9 update issue with missing _id', function(done) {
+      chai
+        .request(server)
+        .put('/api/issues/ourlibraries')
+        .type('form')
+        .send({
+          created_by: 'MJ'
+        })
+        .end(function(err, res) {
+          assert.isOk(res.body.error)
+          done()
+        })
+    })
+
+    test('#10 update an issue with no fields to update', function(done) {
+      chai
+        .request(server)
+        .put('/api/issues/ourlibraries')
+        .type('form')
+        .send({
+          _id: '634b7306d1852520da835db2'
+        })
+        .end(function(err, res) {
+          assert.isOk(res.body.error)
+          done()
+        })
+    })
+
+    test('#11 update an issue with an invalid _id', function(done) {
+      chai
+        .request(server)
+        .put('/api/issues/ourlibraries')
+        .type('form')
+        .send({
+          _id: '34d039e1d1d84258c91913b'
+        })
+        .end(function(err, res) {
+          assert.isOk(res.body.error)
+          done()
+        })
+    })
   })
 });
