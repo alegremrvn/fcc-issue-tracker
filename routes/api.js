@@ -108,14 +108,11 @@ module.exports = function (app) {
             error: 'Provide at least one field to update.'
           })
         } else {
-          try {
-            run().catch(console.dir)
-          } catch(e) {
-            console.log(e)
+          run().catch((e) => {
             res.json({
               error: 'Invalid ObjectId.'
-            })
-          }
+            })            
+          })
         }
       }
 
@@ -124,6 +121,29 @@ module.exports = function (app) {
     .delete(function (req, res){
       let project = req.params.project;
       
+      async function run() {
+        try {
+          await client.connect()
+          const projectIssues = client.db('issue_tracker').collection(project)
+          const result = await projectIssues.deleteMany({_id: new ObjectId(req.body._id)})
+          res.json(result)
+        } finally {
+          await client.close()
+        }
+      }
+      
+      let keys = Object.keys(req.body)
+      if (!keys.includes('_id')) {
+        res.json({
+          error: 'Provide an _id.'
+        })
+      } else {
+        run().catch((e) => {
+          res.json({
+            error: 'Invalid ObjectId.'
+          })
+        })
+      }
     });
     
 };
