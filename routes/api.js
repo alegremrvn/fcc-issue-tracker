@@ -1,6 +1,7 @@
 'use strict';
 require('dotenv').config()
 const MongoClient = require('mongodb').MongoClient
+const ObjectId = require('mongodb').ObjectId
 
 const URI = process.env.MONGO_URI
 const client = new MongoClient(URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -73,6 +74,30 @@ module.exports = function (app) {
     .put(function (req, res){
       let project = req.params.project;
       
+      async function run() {
+        try {
+          await client.connect()
+          let projIssues = client.db('issue_tracker').collection(project)
+
+          let filter = {
+            _id: new ObjectId(req.body._id)
+          }
+
+          let body = JSON.parse(JSON.stringify(req.body))
+          delete body._id
+          let updateDoc = {
+            $set: body
+          }
+
+          let result = await projIssues.updateOne(filter, updateDoc)
+
+          res.json(result)
+        } finally {
+          client.close()
+        }
+      }
+
+      run().catch(console.dir)
     })
     
     .delete(function (req, res){
