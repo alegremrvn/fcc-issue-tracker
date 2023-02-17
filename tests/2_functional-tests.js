@@ -3,29 +3,19 @@ const chai = require('chai');
 const assert = chai.assert;
 const server = require('../server');
 
-require('dotenv').config()
-const { MongoClient } = require('mongodb')
-const uri = process.env['MONGO_URI']
+const { ObjectId } = require('mongodb')
 
 chai.use(chaiHttp);
 
 describe('Functional Tests', function () {
   // clean up before running all the tests
-  before(function () {
-    async function run() {
-      const client = new MongoClient(uri);
-
-      try {
-        // const database = client.db('fcc_issue_tracker');
-        const database = client.db('test');
-        const issues = database.collection('issues');
-
-        await issues.deleteMany()
-      } finally {
-        await client.close();
-      }
-    }
-    run().catch(console.dir);
+  before(function (done) {
+    chai
+      .request(server)
+      .get('/dumpdb')
+      .end(function (err, res) {
+        done()
+      })
   })
 
   describe('POST /api/issues/{project}', function () {
