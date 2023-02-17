@@ -91,4 +91,45 @@ describe('Functional Tests', function () {
         })
     })
   })
+
+  describe('GET /api/issues/{project}', function () {
+    it('Test #4) view issues on a project', function (done) {
+      chai
+        .request(server)
+        .get('/api/issues/foo')
+        .end(function (err, res) {
+          assert.equal(res.body.length, 2)
+          assert.equal(res.body[0].created_by, 'Mario')
+          assert.equal(res.body[1].created_by, 'Mario')
+
+          done()
+        })
+    })
+
+    it('Test #5) view issues on a project with one filter', function (done) {
+      chai
+        .request(server)
+        .get('/api/issues/foo?created_by=Mario')
+        .end(function (err, res) {
+          assert.equal(res.body.length, 2)
+          assert.equal(res.body[0].created_by, 'Mario')
+          assert.equal(res.body[1].created_by, 'Mario')
+
+          done()
+        })
+    })
+
+    it('Test #6) view issues on a project with multiple filters', function (done) {
+      chai
+        .request(server)
+        .get('/api/issues/foo?created_by=Mario&assigned_to=Luigi')
+        .end(function (err, res) {
+          assert.equal(res.body.length, 1)
+          assert.equal(res.body[0].created_by, 'Mario')
+          assert.equal(res.body[1].assigned_to, 'Luigi')
+
+          done()
+        })
+    })
+  })
 });
