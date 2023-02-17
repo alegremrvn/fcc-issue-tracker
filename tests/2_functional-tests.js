@@ -126,7 +126,7 @@ describe('Functional Tests', function () {
         .end(function (err, res) {
           assert.equal(res.body.length, 1)
           assert.equal(res.body[0].created_by, 'Mario')
-          assert.equal(res.body[1].assigned_to, 'Luigi')
+          assert.equal(res.body[0].assigned_to, 'Luigi')
 
           done()
         })
