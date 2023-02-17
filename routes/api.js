@@ -11,6 +11,28 @@ module.exports = function (app) {
     .get(function (req, res) {
       let project = req.params.project;
 
+      const client = new MongoClient(uri)
+
+      async function run() {
+        try {
+          await client.connect()
+          const issues = client.db('test').collection('issues')
+
+          req.query.project_name = project
+          const proj_issues = issues.find(req.query)
+
+          const output = []
+          await proj_issues.forEach(issue => {
+            delete issue.project_name
+            output.push(issue)
+          })
+
+          res.json(output)
+        } finally {
+          await client.close()
+        }
+      }
+      run().catch(console.dir)
     })
 
     .post(function (req, res) {
