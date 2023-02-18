@@ -16,19 +16,19 @@ module.exports = function (app) {
         res.json([])
       } else {
         if (Object.keys(req.query).length === 0) {
-        res.json(db[project])
+          res.json(db[project])
         } else {
           let issues = db[project].slice(0)
-          
+
           let filters = Object.keys(req.query)
-          
+
           filters.forEach(filter => {
             let drop = []
             for (let i = 0; i < issues.length; i++) {
               if (req.query[filter] != issues[i][filter]) drop.push(i)
             }
 
-            for (let i = drop.length -1; i >= 0; i--) {
+            for (let i = drop.length - 1; i >= 0; i--) {
               issues.splice(drop[i], 1)
             }
           })
@@ -70,4 +70,14 @@ module.exports = function (app) {
 
     });
 
+  app.route('/dump/db')
+
+    .get(function (req, res) {
+      db = {}
+      console.log('db dumped')
+
+      res.json({
+        message: 'db dumped'
+      })
+    })
 };
