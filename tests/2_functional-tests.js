@@ -12,7 +12,7 @@ describe('Functional Tests', function () {
   before(function (done) {
     chai
       .request(server)
-      .get('/dumpdb')
+      .get('/dump/db')
       .end(function (err, res) {
         done()
       })
