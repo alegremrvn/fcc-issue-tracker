@@ -1,8 +1,8 @@
 'use strict';
 
-require('dotenv').config()
-const { MongoClient } = require('mongodb')
-const uri = process.env['MONGO_URI']
+const { ObjectId } = require('mongodb')
+
+let db = {}
 
 module.exports = function (app) {
 
@@ -11,68 +11,53 @@ module.exports = function (app) {
     .get(function (req, res) {
       let project = req.params.project;
 
-      const client = new MongoClient(uri)
+      if (!db.hasOwnProperty(project)) {
+        db[project] = []
+        res.json([])
+      } else {
+        if (Object.keys(req.query).length === 0) {
+        res.json(db[project])
+        } else {
+          let issues = db[project].slice(0)
+          
+          let filters = Object.keys(req.query)
+          
+          filters.forEach(filter => {
+            let drop = []
+            for (let i = 0; i < issues.length; i++) {
+              if (req.query[filter] != issues[i][filter]) drop.push(i)
+            }
 
-      async function run() {
-        try {
-          await client.connect()
-          const issues = client.db('test').collection('issues')
-
-          req.query.project_name = project
-          const proj_issues = issues.find(req.query)
-
-          const output = []
-          await proj_issues.forEach(issue => {
-            delete issue.project_name
-            output.push(issue)
+            for (let i = drop.length -1; i >= 0; i--) {
+              issues.splice(drop[i], 1)
+            }
           })
-
-          res.json(output)
-        } finally {
-          await client.close()
+          res.json(issues)
         }
       }
-      run().catch(console.dir)
     })
 
     .post(function (req, res) {
       let project = req.params.project;
 
-      const client = new MongoClient(uri)
+      if (!db.hasOwnProperty(project)) db[project] = []
 
-      async function run() {
-        try {
-          await client.connect()
-          const issues = client.db('test').collection('issues')
+      if (req.body.issue_title && req.body.issue_text && req.body.created_by) {
+        if (!req.body.assigned_to) req.body.assigned_to = ''
+        if (!req.body.status_text) req.body.status_text = ''
+        req.body.created_on = new Date()
+        req.body.updated_on = new Date()
+        req.body.open = true
+        req.body._id = new ObjectId()
 
-          if (req.body.issue_title && req.body.issue_text && req.body.created_by) {
-            if (!req.body.assigned_to) req.body.assigned_to = ''
-            if (!req.body.status_text) req.body.status_text = ''
-            req.body.created_on = new Date()
-            req.body.updated_on = new Date()
-            req.body.open = true
-            req.body.project_name = project
+        db[project].push(req.body)
 
-            const insertResult = await issues.insertOne(req.body)
-
-            if (insertResult.acknowledged === true) {
-              delete req.body.project_name
-              res.json(req.body)
-            } else {
-              res.json({
-                error: 'unable to create an issue at the moment'
-              })
-            }
-          } else {
-            res.json({
-              error: 'required field(s) missing'
-            })
-          }
-        } finally {
-          client.close()
-        }
+        res.json(req.body)
+      } else {
+        res.json({
+          error: 'required field(s) missing'
+        })
       }
-      run().catch(console.dir)
     })
 
     .put(function (req, res) {
