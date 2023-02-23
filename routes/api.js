@@ -63,11 +63,89 @@ module.exports = function (app) {
     .put(function (req, res) {
       let project = req.params.project;
 
+      if (!req.body._id) {
+        res.json({
+          error: 'missing _id'
+        })
+      } else {
+        if (Object.keys(req.body).length === 1) {
+        res.json({
+            error: 'no update field(s) sent',
+            _id: req.body._id
+          })
+        } else {
+          try {
+            let index
+            let issues = db[project]
+            let idToUpdate = new ObjectId(req.body._id)
+            for (let i = 0; i < issues.length; i++) {
+              if (issues[i]._id.equals(idToUpdate)) {
+                index = i
+                break
+              }
+            }
+
+            if (index === undefined) {
+              throw Error('_id not in the database')
+            } else {
+              for (let prop of Object.keys(req.body)) {
+                if (prop !== '_id') {
+                  issues[index].prop = req.body[prop]
+                }
+              }
+              issues[index].updated_on = new Date()
+
+              res.json({
+                result: 'successfully updated',
+                _id: req.body._id
+              })
+            }
+          } catch (err) {
+            res.json({
+              error: 'could not update',
+              _id: req.body._id
+            })
+          }
+        }
+      }
     })
 
     .delete(function (req, res) {
       let project = req.params.project;
 
+      if (!req.body._id) {
+        res.json({
+          error: 'missing _id'
+        })
+      } else {
+        try {
+          let index
+          let issues = db[project]
+          let idToDelete = new ObjectId(req.body._id)
+          for (let i = 0; i < issues.length; i++) {
+            if (issues[i]._id.equals(idToDelete)) {
+              index = i
+              break
+            }
+          }
+
+          if (index === undefined) {
+            throw Error('_id not in the database')
+          } else {
+            issues.splice(index, 1)
+
+            res.json({
+              result: 'successfully deleted',
+              _id: req.body._id
+            })
+          }
+        } catch (err) {
+          res.json({
+            error: 'could not delete',
+            _id: req.body._id
+          })
+        }
+      }      
     });
 
   app.route('/dump/db')
